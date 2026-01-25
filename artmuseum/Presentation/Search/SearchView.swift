@@ -25,7 +25,7 @@ struct SearchView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
                     .padding(.top, 10)
-                    .onChange(of: viewModel.sortOption) { _ in
+                    .onChange(of: viewModel.sortOption) { _, _ in
                         viewModel.sortResults()
                     }
                 }
@@ -111,3 +111,4 @@ struct SearchView: View {
         }
     }
 }
+

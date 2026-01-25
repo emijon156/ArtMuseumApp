@@ -13,10 +13,8 @@ struct ExhibitionDetailView: View {
     @StateObject private var viewModel: ExhibitionDetailViewModel
     @ObservedObject var favoritesManager = FavoritesManager.shared
     
-    // MARK: - Search State
     @State private var searchText = ""
     
-    // MARK: - Read More State
     @State private var isExpanded: Bool = false
     private let truncationLimit = 180
     
@@ -42,7 +40,6 @@ struct ExhibitionDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             
-            // MARK: 1. Search Bar (Pinned at Top)
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
@@ -57,7 +54,6 @@ struct ExhibitionDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     
-                    // MARK: 2. Header Image
                     AsyncImage(url: exhibition.imageUrl) { phase in
                         if let image = phase.image {
                             image
@@ -74,7 +70,6 @@ struct ExhibitionDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 20) {
                         
-                        // MARK: 3. Title & Date
                         VStack(alignment: .leading, spacing: 8) {
                             Text(exhibition.title)
                                 .font(.title)
@@ -85,7 +80,6 @@ struct ExhibitionDetailView: View {
                                 .foregroundColor(.secondary)
                         }
                         
-                        // MARK: 4. About Section
                         VStack(alignment: .leading, spacing: 6) {
                             Text(descriptionText)
                                 .font(.body)
@@ -103,7 +97,6 @@ struct ExhibitionDetailView: View {
                         
                         Divider().padding(.vertical, 8)
                         
-                        // MARK: 5. Artwork List
                         if viewModel.isLoading {
                             ProgressView().frame(maxWidth: .infinity, minHeight: 100)
                         } else if filteredArtworks.isEmpty {
@@ -118,7 +111,6 @@ struct ExhibitionDetailView: View {
                                     } label: {
                                         HStack(alignment: .top, spacing: 16) {
                                             
-                                            // A. Image (Rectangle, slightly larger than before)
                                             ZStack(alignment: .topTrailing) {
                                                 AsyncImage(url: artwork.imageUrl) { img in
                                                     img.resizable()
@@ -126,8 +118,7 @@ struct ExhibitionDetailView: View {
                                                 } placeholder: {
                                                     Color.gray.opacity(0.3)
                                                 }
-                                                // WAS: width: 100, height: 100 (Square)
-                                                // NOW: width: 140, height: 90 (Rectangle)
+                                                
                                                 .frame(width: 140, height: 90)
                                                 .cornerRadius(8)
                                                 .clipped()
@@ -145,7 +136,7 @@ struct ExhibitionDetailView: View {
                                                 .padding(4)
                                             }
                                             
-                                            // B. Text Info on the Right
+                                            //Text Info on the Right
                                             VStack(alignment: .leading, spacing: 6) {
                                                 Text(artwork.title)
                                                     .font(.headline)
@@ -185,9 +176,7 @@ struct ExhibitionDetailView: View {
             await viewModel.loadArtworks(exhibitionID: exhibition.id)
         }
     }
-    
-    // MARK: - Helper Functions
-    
+        
     private var descriptionText: String {
         let fullDescription = exhibition.description ?? "No description available."
         if isExpanded || fullDescription.count <= truncationLimit {

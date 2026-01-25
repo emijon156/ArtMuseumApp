@@ -19,8 +19,8 @@ final class DefaultArtworksRepository: ArtworksRepository {
         components.queryItems = [
             URLQueryItem(name: "apikey", value: apiKey),
             URLQueryItem(name: "exhibition", value: String(exhibitionID)), // Filter by this exhibition
-            URLQueryItem(name: "hasimage", value: "1"), // REQUIRED: Only show items with images
-            URLQueryItem(name: "size", value: "50") // Get 50 items (default is only 10)
+            URLQueryItem(name: "hasimage", value: "1"), // Only show items with images
+            URLQueryItem(name: "size", value: "50") // Get 50 items
         ]
         
         guard let url = components.url else { throw URLError(.badURL) }

@@ -29,13 +29,9 @@ class SearchViewModel: ObservableObject {
     }
     
     
-    /// Sorts the current `results` array based on the selected `sortOption`.
     func sortResults() {
         switch sortOption {
         case .relevance:
-            // For relevance, we typically keep the order returned by the API.
-            // If you need to "reset" this, you would usually re-fetch or keep a backup of the original array.
-            // For this implementation, we simply don't re-sort.
             break
         case .newest:
             results.sort { ($0.date ?? "") > ($1.date ?? "") }
@@ -50,17 +46,17 @@ class SearchViewModel: ObservableObject {
     func search() async {
         guard !searchText.isEmpty else { return }
         
-        // 1. Save to history
+        //Save to history
         SearchHistoryManager.shared.add(searchText)
         
         isLoading = true
         
         do {
-            // 2. Fetch from API
+            //Fetch from API
             let fetched = try await repository.searchArtworks(query: searchText)
             
-            // 3. Apply Sort immediately
-            // We assign the fetched results first, then sort them in place
+            //Apply Sort immediately
+            //We assign the fetched results first, then sort them in place
             self.results = fetched
             sortResults()
             

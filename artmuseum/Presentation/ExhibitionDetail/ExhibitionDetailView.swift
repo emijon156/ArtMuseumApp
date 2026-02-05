@@ -192,6 +192,20 @@ struct ExhibitionDetailView: View {
         return fullDescription.count > truncationLimit
     }
     
+    /// Formats the exhibition's date range into a year-based display format.
+    ///
+    /// This function converts the exhibition's begin and end dates from ISO 8601 format
+    /// (yyyy-MM-dd) to a year-only range format (e.g., "2023 – 2024"). If both dates
+    /// fall within the same year or only one date is available, it returns a single year.
+    ///
+    /// - Returns: A formatted string containing either:
+    ///   - A year range with an en-dash separator (e.g., "2023 – 2024")
+    ///   - A single year if begin and end are the same or only one is available
+    ///   - An empty string if no valid dates can be parsed
+    ///
+    /// - Note: This function is more forgiving than `formatDateRange()` in ExhibitionListView.
+    ///         It will return partial results (e.g., just the start year) if the end date
+    ///         is missing or invalid, rather than returning an empty string.
     private func formattedDateRange() -> String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"

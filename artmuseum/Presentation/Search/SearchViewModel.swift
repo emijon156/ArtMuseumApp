@@ -29,6 +29,16 @@ class SearchViewModel: ObservableObject {
     }
     
     
+    /// Sorts the search results array based on the currently selected sort option.
+    ///
+    /// This method modifies the `results` array in-place using one of four sorting strategies:
+    /// - `.relevance`: No sorting applied; results remain in API-returned order
+    /// - `.newest`: Sorts by date in descending order (most recent first), using lexicographic comparison
+    /// - `.oldest`: Sorts by date in ascending order (oldest first), using lexicographic comparison
+    /// - `.alphabetical`: Sorts by artwork title in ascending alphabetical order (A-Z)
+    ///
+    /// - Note: Date sorting treats nil dates as empty strings, which will sort to the beginning.
+    ///         The date format is expected to be ISO 8601 compatible for proper lexicographic sorting.
     func sortResults() {
         switch sortOption {
         case .relevance:
@@ -43,6 +53,19 @@ class SearchViewModel: ObservableObject {
     }
     
     
+    /// Performs an asynchronous artwork search using the current search text.
+    ///
+    /// This method orchestrates the complete search workflow:
+    /// 1. Validates that searchText is not empty
+    /// 2. Adds the query to search history via SearchHistoryManager
+    /// 3. Sets loading state and fetches results from the repository
+    /// 4. Applies the current sort option to the fetched results
+    /// 5. Handles errors by clearing results and printing to console
+    ///
+    /// - Note: This is a `@MainActor` function that updates UI-related published properties.
+    ///         Search queries are saved to history even if the API request fails.
+    ///
+    /// - SeeAlso: `sortResults()` for details on how results are sorted after fetching
     func search() async {
         guard !searchText.isEmpty else { return }
         

@@ -81,6 +81,28 @@ struct ExhibitionListView: View {
         }
     }
     
+    /// Formats a date range string for display in the UI.
+    ///
+    /// This function converts start and end dates from ISO 8601 format (yyyy-MM-dd) to a 
+    /// more user-friendly abbreviated format (MMM d - MMM d). For example, "2024-01-15" 
+    /// and "2024-02-28" would be formatted as "Jan 15 - Feb 28".
+    ///
+    /// - Parameters:
+    ///   - start: Optional start date string in "yyyy-MM-dd" format
+    ///   - end: Optional end date string in "yyyy-MM-dd" format
+    ///
+    /// - Returns: A formatted date range string, or an empty string if either date is nil
+    ///            or if date parsing fails
+    ///
+    /// - Note: This function performs defensive date parsing. If the input strings don't match
+    ///         the expected format or contain invalid dates, an empty string is returned rather
+    ///         than crashing or showing malformed output.
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   formatDateRange(start: "2024-01-15", end: "2024-02-28")
+    ///   // Returns: "Jan 15 - Feb 28"
+    ///   ```
     private func formatDateRange(start: String?, end: String?) -> String {
         guard let start = start, let end = end else { return "" }
         let inputFormatter = DateFormatter()

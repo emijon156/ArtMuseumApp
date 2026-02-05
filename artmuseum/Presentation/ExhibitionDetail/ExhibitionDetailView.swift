@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+/// Detail view for displaying a specific exhibition and its associated artworks.
+/// Features:
+/// - Large exhibition image header
+/// - Exhibition title, date range, and expandable description
+/// - Searchable list of artworks in the exhibition
+/// - Ability to favorite artworks directly from the list
 struct ExhibitionDetailView: View {
     let exhibition: Exhibition
     
@@ -14,11 +20,12 @@ struct ExhibitionDetailView: View {
     @ObservedObject var favoritesManager = FavoritesManager.shared
     
     @State private var searchText = ""
-    
     @State private var isExpanded: Bool = false
+    
+    /// Character limit before truncating description with "Read more" option
     private let truncationLimit = 180
     
-    // Filter logic
+    /// Computed property that filters artworks based on search text
     var filteredArtworks: [Artwork] {
         if searchText.isEmpty {
             return viewModel.artworks
@@ -30,6 +37,7 @@ struct ExhibitionDetailView: View {
         }
     }
     
+    /// Initializes the view with an exhibition, setting up required dependencies
     init(exhibition: Exhibition) {
         self.exhibition = exhibition
         let repo = DefaultArtworksRepository()
@@ -40,6 +48,7 @@ struct ExhibitionDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             
+            // Search bar fixed at top
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
@@ -54,6 +63,7 @@ struct ExhibitionDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     
+                    // Exhibition header image
                     AsyncImage(url: exhibition.imageUrl) { phase in
                         if let image = phase.image {
                             image
@@ -70,6 +80,7 @@ struct ExhibitionDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 20) {
                         
+                        // Exhibition title and date
                         VStack(alignment: .leading, spacing: 8) {
                             Text(exhibition.title)
                                 .font(.title)
@@ -80,6 +91,7 @@ struct ExhibitionDetailView: View {
                                 .foregroundColor(.secondary)
                         }
                         
+                        // Exhibition description with expand/collapse
                         VStack(alignment: .leading, spacing: 6) {
                             Text(descriptionText)
                                 .font(.body)
@@ -97,6 +109,7 @@ struct ExhibitionDetailView: View {
                         
                         Divider().padding(.vertical, 8)
                         
+                        // Artworks list with loading and empty states
                         if viewModel.isLoading {
                             ProgressView().frame(maxWidth: .infinity, minHeight: 100)
                         } else if filteredArtworks.isEmpty {
@@ -109,6 +122,7 @@ struct ExhibitionDetailView: View {
                                     NavigationLink {
                                         ArtworkDetailView(artwork: artwork)
                                     } label: {
+                                        // Artwork row with thumbnail and favorite button
                                         HStack(alignment: .top, spacing: 16) {
                                             
                                             ZStack(alignment: .topTrailing) {
@@ -123,7 +137,7 @@ struct ExhibitionDetailView: View {
                                                 .cornerRadius(8)
                                                 .clipped()
                                                 
-                                                // Heart Button
+                                                // Favorite button overlay
                                                 Button {
                                                     favoritesManager.toggle(artwork)
                                                 } label: {
@@ -136,7 +150,7 @@ struct ExhibitionDetailView: View {
                                                 .padding(4)
                                             }
                                             
-                                            //Text Info on the Right
+                                            // Artwork info
                                             VStack(alignment: .leading, spacing: 6) {
                                                 Text(artwork.title)
                                                     .font(.headline)
@@ -158,7 +172,7 @@ struct ExhibitionDetailView: View {
                                             }
                                             Spacer()
                                         }
-                                        .contentShape(Rectangle()) // Ensures tap area works on whitespace
+                                        .contentShape(Rectangle())
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                 }
@@ -177,6 +191,7 @@ struct ExhibitionDetailView: View {
         }
     }
         
+    /// Returns the description text, either truncated or full based on isExpanded state
     private var descriptionText: String {
         let fullDescription = exhibition.description ?? "No description available."
         if isExpanded || fullDescription.count <= truncationLimit {
@@ -187,11 +202,13 @@ struct ExhibitionDetailView: View {
         }
     }
     
+    /// Determines if the "Read more" button should be shown
     private var shouldShowReadMoreButton: Bool {
         let fullDescription = exhibition.description ?? ""
         return fullDescription.count > truncationLimit
     }
     
+    /// Formats the exhibition date range as "YYYY – YYYY"
     private func formattedDateRange() -> String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"

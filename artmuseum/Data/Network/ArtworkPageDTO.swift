@@ -5,33 +5,43 @@
 //  Created by Emily Jon on 1/24/26.
 //
 
-
 import Foundation
 
-//The Wrapper
+/// Data Transfer Object representing the API response wrapper for artworks.
+/// DTOs are used to decode JSON responses from the API and are kept separate
+/// from domain entities to maintain separation of concerns.
 struct ArtworkPageDTO: Decodable {
+    /// Array of artwork records from the API response
     let records: [ArtworkDTO]
 }
 
-//JSON Structure
+/// Data Transfer Object matching the JSON structure of an artwork from the API.
+/// Field names match the Harvard Art Museums API response format.
 struct ArtworkDTO: Decodable {
     let objectid: Int
     let title: String
     let primaryimageurl: String?
     
-    // New Fields matching JSON exactly
+    // Artwork metadata fields matching JSON exactly
     let dated: String?
     let medium: String?
     let department: String?
     let creditline: String?
     
-    // Artist handling
+    // Artist handling - nested array of people objects
     let people: [PersonDTO]?
-    struct PersonDTO: Decodable { let name: String }
+    
+    /// Nested DTO for artist information
+    struct PersonDTO: Decodable { 
+        let name: String 
+    }
 }
 
+/// Extension to convert API DTOs to domain entities.
+/// This mapping keeps the domain layer independent of external API structures.
 extension ArtworkDTO {
     func toDomain() -> Artwork {
+        // Extract first artist name or default to "Unknown Artist"
         let artistName = people?.first?.name ?? "Unknown Artist"
         
         return Artwork(
@@ -39,8 +49,6 @@ extension ArtworkDTO {
             title: title,
             artist: artistName,
             imageUrl: URL(string: primaryimageurl ?? ""),
-            
-            // Map new fields
             date: dated,
             medium: medium,
             department: department,

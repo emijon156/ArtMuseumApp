@@ -5,9 +5,15 @@
 //  Created by Emily Jon on 1/25/26.
 //
 
-
 import SwiftUI
 
+/// Detail view for displaying comprehensive information about a single artwork.
+/// Features:
+/// - Large artwork image
+/// - Title and artist information
+/// - Favorite button to save the artwork
+/// - Detailed metadata (date, medium, department, credit line)
+/// - Share functionality to share the artwork
 struct ArtworkDetailView: View {
     let artwork: Artwork
     @ObservedObject var favoritesManager = FavoritesManager.shared
@@ -15,7 +21,7 @@ struct ArtworkDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                //Image
+                // Artwork image
                 AsyncImage(url: artwork.imageUrl) { phase in
                     if let image = phase.image {
                         image.resizable().aspectRatio(contentMode: .fit)
@@ -25,10 +31,10 @@ struct ArtworkDetailView: View {
                         Color.gray.opacity(0.1).frame(height: 300)
                     }
                 }
-                .cornerRadius(0) // Full width look
+                .cornerRadius(0)
                 
                 VStack(alignment: .leading, spacing: 16) {
-                    //itle & Action Buttons
+                    // Title, artist, and favorite button
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(artwork.title)
@@ -41,7 +47,7 @@ struct ArtworkDetailView: View {
                         
                         Spacer()
                         
-                        // Favorite Button
+                        // Favorite toggle button
                         Button {
                             favoritesManager.toggle(artwork)
                         } label: {
@@ -53,13 +59,13 @@ struct ArtworkDetailView: View {
                     
                     Divider()
                     
-                    // Information
+                    // Artwork metadata information rows
                     InfoRow(label: "Date", value: artwork.date)
                     InfoRow(label: "Medium", value: artwork.medium)
                     InfoRow(label: "Department", value: artwork.department)
                     InfoRow(label: "Credit", value: artwork.creditLine)
                     
-                    //Share Button
+                    // Share button
                     if let url = artwork.imageUrl {
                         ShareLink(item: url, message: Text("Check out '\(artwork.title)' by \(artwork.artist ?? "")")) {
                             Label("Share Artwork", systemImage: "square.and.arrow.up")
@@ -79,6 +85,8 @@ struct ArtworkDetailView: View {
     }
 }
 
+/// Reusable component for displaying labeled information rows.
+/// Only renders if the value is non-nil and non-empty.
 struct InfoRow: View {
     let label: String
     let value: String?

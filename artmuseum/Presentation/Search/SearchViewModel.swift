@@ -5,20 +5,30 @@
 //  Created by Emily Jon on 1/25/26.
 //
 
-
 import SwiftUI
 import Combine
 
+/// ViewModel for the search screen.
+/// Manages the state and business logic for searching artworks and sorting results.
+/// Automatically saves search queries to history for user convenience.
 @MainActor
 class SearchViewModel: ObservableObject {
     
+    /// Published search text binding to the search bar
     @Published var searchText: String = ""
+    
+    /// Published array of search results that triggers UI updates
     @Published var results: [Artwork] = []
+    
+    /// Published loading state indicator
     @Published var isLoading: Bool = false
+    
+    /// Published sort option that can be changed by the user
     @Published var sortOption: SortOption = .relevance
     
     private let repository = DefaultArtworksRepository()
     
+    /// Available sorting options for search results
     enum SortOption: String, CaseIterable, Identifiable {
         case relevance = "Relevance"
         case newest = "Newest Date"
@@ -28,11 +38,11 @@ class SearchViewModel: ObservableObject {
         var id: String { self.rawValue }
     }
     
-    
+    /// Sorts the current results based on the selected sort option
     func sortResults() {
         switch sortOption {
         case .relevance:
-            break
+            break // Keep API's relevance order
         case .newest:
             results.sort { ($0.date ?? "") > ($1.date ?? "") }
         case .oldest:
@@ -42,26 +52,25 @@ class SearchViewModel: ObservableObject {
         }
     }
     
-    
+    /// Performs a search for artworks matching the current search text
+    /// Saves the search query to history and applies the current sort option
     func search() async {
         guard !searchText.isEmpty else { return }
         
-        //Save to history
+        // Save search query to history
         SearchHistoryManager.shared.add(searchText)
         
         isLoading = true
         
         do {
-            //Fetch from API
+            // Fetch results from API
             let fetched = try await repository.searchArtworks(query: searchText)
             
-            //Apply Sort immediately
-            //We assign the fetched results first, then sort them in place
+            // Store results and apply current sort
             self.results = fetched
             sortResults()
             
             isLoading = false
-            
         } catch {
             print("Search error: \(error.localizedDescription)")
             self.results = []

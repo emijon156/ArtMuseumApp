@@ -5,18 +5,23 @@
 //  Created by Emily Jon on 1/25/26.
 //
 
-
 import SwiftUI
 
+/// View for displaying the user's saved favorite artworks.
+/// Features:
+/// - Empty state when no favorites are saved
+/// - List of favorite artworks with thumbnails and metadata
+/// - Direct navigation to artwork details
+/// - Toggle favorite status (unfavorite) from this view
 struct FavoritesView: View {
-    // Listen to the global manager
+    /// Observes the shared favorites manager for reactive updates
     @ObservedObject var manager = FavoritesManager.shared
     
     var body: some View {
         NavigationView {
             Group {
                 if manager.savedArtworks.isEmpty {
-                    // Modern Empty State
+                    // Modern empty state view
                     ContentUnavailableView(
                         "No Favorites",
                         systemImage: "heart.slash",
@@ -24,19 +29,18 @@ struct FavoritesView: View {
                     )
                 } else {
                     ScrollView {
-                        // Using LazyVStack to match Exhibition Detail style
                         LazyVStack(spacing: 20) {
                             ForEach(manager.savedArtworks) { artwork in
                                 
-                                //Click to Navigate
+                                // Navigable artwork row
                                 NavigationLink {
                                     ArtworkDetailView(artwork: artwork)
                                 } label: {
                                     
-                                    //The Row Layout
+                                    // Artwork row layout
                                     HStack(alignment: .top, spacing: 16) {
                                         
-                                        //Image with Heart Overlay
+                                        // Artwork thumbnail with unfavorite button
                                         ZStack(alignment: .topTrailing) {
                                             AsyncImage(url: artwork.imageUrl) { img in
                                                 img.resizable()
@@ -44,11 +48,11 @@ struct FavoritesView: View {
                                             } placeholder: {
                                                 Color.gray.opacity(0.3)
                                             }
-                                            .frame(width: 140, height: 90) // Rectangular styling
+                                            .frame(width: 140, height: 90)
                                             .cornerRadius(8)
                                             .clipped()
                                             
-                                            // Heart Button
+                                            // Unfavorite button
                                             Button {
                                                 manager.toggle(artwork)
                                             } label: {
@@ -61,13 +65,13 @@ struct FavoritesView: View {
                                             .padding(4)
                                         }
                                         
-                                        //Text Info
+                                        // Artwork metadata
                                         VStack(alignment: .leading, spacing: 6) {
                                             Text(artwork.title)
                                                 .font(.headline)
                                                 .lineLimit(2)
                                                 .multilineTextAlignment(.leading)
-                                                .foregroundColor(.primary) // Ensure text isn't blue link color
+                                                .foregroundColor(.primary)
                                             
                                             Text(artwork.artist ?? "Unknown Artist")
                                                 .font(.subheadline)
@@ -84,9 +88,9 @@ struct FavoritesView: View {
                                         }
                                         Spacer()
                                     }
-                                    .contentShape(Rectangle()) // Ensures the whitespace is clickable
+                                    .contentShape(Rectangle())
                                 }
-                                .buttonStyle(PlainButtonStyle()) // Removes default navigation link styling
+                                .buttonStyle(PlainButtonStyle())
                             }
                         }
                         .padding()

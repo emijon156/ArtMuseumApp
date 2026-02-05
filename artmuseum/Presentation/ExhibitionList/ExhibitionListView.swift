@@ -7,10 +7,14 @@
 
 import SwiftUI
 
+/// Main view for browsing exhibitions from the Harvard Art Museums.
+/// Displays a scrollable list of exhibitions with images, titles, dates, and descriptions.
+/// Includes search functionality to filter exhibitions by title or description.
 struct ExhibitionListView: View {
     @StateObject var viewModel: ExhibitionListViewModel
     @State private var searchText = ""
     
+    /// Computed property that filters exhibitions based on search text
     var filteredExhibitions: [Exhibition] {
         if searchText.isEmpty {
             return viewModel.exhibitions
@@ -26,6 +30,7 @@ struct ExhibitionListView: View {
         NavigationView {
             List(filteredExhibitions) { exhibition in
                 ZStack {
+                    // Hidden NavigationLink for proper navigation behavior
                     NavigationLink {
                         ExhibitionDetailView(exhibition: exhibition)
                     } label: {
@@ -33,8 +38,9 @@ struct ExhibitionListView: View {
                     }
                     .opacity(0)
                     
-                    // Row Content
+                    // Exhibition card content
                     VStack(alignment: .leading, spacing: 12) {
+                        // Exhibition image
                         AsyncImage(url: exhibition.imageUrl) { phase in
                             if let image = phase.image {
                                 image.resizable().aspectRatio(contentMode: .fill)
@@ -47,6 +53,7 @@ struct ExhibitionListView: View {
                         .cornerRadius(12)
                         .clipped()
                         
+                        // Exhibition title and date range
                         HStack(alignment: .top) {
                             Text(exhibition.title)
                                 .font(.headline)
@@ -61,6 +68,7 @@ struct ExhibitionListView: View {
                                 .foregroundColor(.secondary)
                         }
                         
+                        // Exhibition description
                         if let description = exhibition.description {
                             Text(description)
                                 .font(.subheadline)
@@ -81,6 +89,11 @@ struct ExhibitionListView: View {
         }
     }
     
+    /// Formats exhibition date range from ISO format to user-friendly format
+    /// - Parameters:
+    ///   - start: Start date in yyyy-MM-dd format
+    ///   - end: End date in yyyy-MM-dd format
+    /// - Returns: Formatted date range string (e.g., "Jan 15 - Mar 30")
     private func formatDateRange(start: String?, end: String?) -> String {
         guard let start = start, let end = end else { return "" }
         let inputFormatter = DateFormatter()
